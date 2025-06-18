@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OTP Verification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js"></script>
+  <!-- CSS Styling -->
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #3F51B5, #5C6BC0);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      width: 300px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 12px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      background-color: #FFEB3B;
+      color: black;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #FDD835;
+    }
+
+    #recaptcha-container {
+      margin-top: 10px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>OTP Login</h2>
+    <input type="text" id="phone" placeholder="+91xxxxxxxxxx" />
+    <div id="recaptcha-container"></div>
+    <button onclick="sendOTP()">Send OTP</button>
+
+    <input type="text" id="otp" placeholder="Enter OTP" />
+    <button onclick="verifyOTP()">Verify OTP</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import {
+      getAuth,
+      RecaptchaVerifier,
+      signInWithPhoneNumber
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+    // 🔧 Replace with your Firebase config
+    const firebaseConfig = {
+  apiKey: "AIzaSyC_2OSEE2Wtx_k_VbZDlQhyxExsTIUvEZ8",
+  authDomain: "otp-web-9c94f.firebaseapp.com",
+  projectId: "otp-web-9c94f",
+  storageBucket: "otp-web-9c94f.firebasestorage.app",
+  messagingSenderId: "163071001353",
+  appId: "1:163071001353:web:57d2b60be7c0a422a889d8",
+  measurementId: "G-DS4NG5PTDL"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    let recaptchaVerifier;
+    let confirmationResult;
+
+    window.onload = () => {
+      recaptchaVerifier = new RecaptchaVerifier(
+        'recaptcha-container',
+        { size: 'normal' },
+        auth
+      );
+      recaptchaVerifier.render().catch(console.error);
+    };
+
+    window.sendOTP = () => {
+      const phone = document.getElementById('phone').value;
+      if (!phone || !phone.startsWith("+")) {
+        alert("Please enter a valid phone number with country code (e.g. +91...)");
+        return;
+      }
+
+      signInWithPhoneNumber(auth, phone, recaptchaVerifier)
+        .then((result) => {
+          confirmationResult = result;
+          alert("OTP sent!");
+        })
+        .catch((error) => {
+          console.error(error);
+          alert("Failed to send OTP. Please try again.");
+        });
+    };
+
+    window.verifyOTP = () => {
+      const code = document.getElementById('otp').value;
+      if (!confirmationResult || code.length === 0) {
+        alert("Please enter the OTP.");
+        return;
+      }
+
+      confirmationResult.confirm(code)
+        .then((result) => {
+          alert("Phone number verified! UID: " + result.user.uid);
+        })
+        .catch(() => {
+          alert("Invalid OTP. Try again.");
+        });
+    };
+  </script>
+
+</body>
+</html
