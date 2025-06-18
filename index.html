@@ -94,7 +94,7 @@
 
   <!-- Firebase Setup -->
   <script>
-    const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyBXmlVLOId2LzxvGsvUP_2VGCIELOgziBI",
   authDomain: "otp-web-7c2d7.firebaseapp.com",
   projectId: "otp-web-7c2d7",
@@ -104,10 +104,16 @@
   measurementId: "G-2GW1V7K4RR"
 };
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+  // Initialize Firebase first
+  firebase.initializeApp(firebaseConfig);
 
-    // Setup invisible reCAPTCHA
+  // Declare auth globally
+  let auth;
+
+  // Setup recaptcha and auth after page fully loads
+  window.onload = function () {
+    auth = firebase.auth();
+
     window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
       size: 'invisible',
       callback: function(response) {
@@ -115,31 +121,36 @@
       }
     });
 
-    function sendOTP() {
-      const phone = document.getElementById("phone").value;
-      const appVerifier = window.recaptchaVerifier;
+    recaptchaVerifier.render(); // Ensures it gets rendered before use
+  };
 
-      auth.signInWithPhoneNumber(phone, appVerifier)
-        .then((confirmationResult) => {
-          window.confirmationResult = confirmationResult;
-          alert("OTP sent successfully!");
-        }).catch((error) => {
-          console.error(error);
-          alert("Error sending OTP:\n" + error.message);
-        });
-    }
+  function sendOTP() {
+    const phone = document.getElementById("phone").value;
+    const appVerifier = window.recaptchaVerifier;
 
-    function verifyOTP() {
-      const otp = document.getElementById("otp").value;
-
-      window.confirmationResult.confirm(otp).then((result) => {
-        const user = result.user;
-        alert("Phone verified! UID: " + user.uid);
+    auth.signInWithPhoneNumber(phone, appVerifier)
+      .then((confirmationResult) => {
+        window.confirmationResult = confirmationResult;
+        alert("OTP sent successfully!");
       }).catch((error) => {
         console.error(error);
-        alert("Invalid OTP. Try again.");
+        alert("Error sending OTP:\n" + error.message);
       });
-    }
+  }
+
+  function verifyOTP() {
+    const otp = document.getElementById("otp").value;
+
+    window.confirmationResult.confirm(otp).then((result) => {
+      const user = result.user;
+      alert("Phone verified! UID: " + user.uid);
+    }).catch((error) => {
+      console.error(error);
+      alert("Invalid OTP. Try again.");
+    });
+  }
+</script>
+
   </script>
 
 </body>
