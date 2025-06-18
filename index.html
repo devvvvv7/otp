@@ -97,7 +97,12 @@
 
   <script>
     (function() {
-      emailjs.init("114R43n_4TD9rHUZi"); // EmailJS public key
+      try {
+        emailjs.init("114R43n_4TD9rHUZi"); // EmailJS public key
+        console.log("EmailJS initialized successfully");
+      } catch (error) {
+        console.error("EmailJS initialization failed:", error);
+      }
     })();
 
     let generatedOtp = null;
@@ -131,8 +136,11 @@
         otp: generatedOtp
       };
 
+      console.log("Attempting to send OTP with params:", templateParams);
+
       emailjs.send('service_iq2s93t', 'template_l9mfmqr', templateParams)
-        .then(() => {
+        .then((response) => {
+          console.log("EmailJS send success:", response.status, response.text);
           showMessage('OTP sent to your email!', true);
           otpGroup.style.display = 'block';
           verifyOtpButton.style.display = 'block';
@@ -140,7 +148,8 @@
           emailInput.disabled = true;
         })
         .catch((error) => {
-          showMessage(`Failed to send OTP: ${error.text || 'Please try again.'}`, false);
+          console.error("EmailJS send failed:", error);
+          showMessage(`Failed to send OTP: ${error.text || error.message || 'Unknown error. Check console for details.'}`, false);
         });
     });
 
