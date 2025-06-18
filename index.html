@@ -85,7 +85,7 @@
         to_email: email
       };
 
-      emailjs.send("service_iq2s93t", "", params)
+      emailjs.send("service_iq2s93t", "template_l9mfmqr", params)
         .then(() => {
           document.getElementById("status").innerText = "✅ OTP sent to your email.";
         })
