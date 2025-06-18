@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Email OTP Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -139,8 +139,8 @@
           sendOtpButton.style.display = 'none';
           emailInput.disabled = true;
         })
-        .catch(() => {
-          showMessage('Failed to send OTP. Please try again.', false);
+        .catch((error) => {
+          showMessage(`Failed to send OTP: ${error.text || 'Please try again.'}`, false);
         });
     });
 
