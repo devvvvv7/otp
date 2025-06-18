@@ -99,7 +99,7 @@
     (function() {
       try {
         emailjs.init("114R43n_4TD9rHUZi"); // EmailJS public key
-        console.log("EmailJS initialized successfully");
+        console.log("EmailJS initialized successfully with Public Key:", "114R43n_4TD9rHUZi");
       } catch (error) {
         console.error("EmailJS initialization failed:", error);
       }
@@ -137,6 +137,7 @@
       };
 
       console.log("Attempting to send OTP with params:", templateParams);
+      console.log("Using Service ID:", "service_iq2s93t", "Template ID:", "template_l9mfmqr");
 
       emailjs.send('service_iq2s93t', 'template_l9mfmqr', templateParams)
         .then((response) => {
